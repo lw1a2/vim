@@ -1,0 +1,355 @@
+" All system-wide defaults are set in $VIMRUNTIME/debian.vim and sourced by
+" the call to :runtime you can find below.  If you wish to change any of those
+" settings, you should do it in this file (/etc/vim/vimrc), since debian.vim
+" will be overwritten everytime an upgrade of the vim packages is performed.
+" It is recommended to make changes after sourcing debian.vim since it alters
+" the value of the 'compatible' option.
+
+" This line should not be removed as it ensures that various options are
+" properly set to work with the Vim-related packages available in Debian.
+runtime! debian.vim
+
+" Vim will load $VIMRUNTIME/defaults.vim if the user does not have a vimrc.
+" This happens after /etc/vim/vimrc(.local) are loaded, so it will override
+" any settings in these files.
+" If you don't want that to happen, uncomment the below line to prevent
+" defaults.vim from being loaded.
+" let g:skip_defaults_vim = 1
+
+" Uncomment the next line to make Vim more Vi-compatible
+" NOTE: debian.vim sets 'nocompatible'.  Setting 'compatible' changes numerous
+" options, so any other options should be set AFTER setting 'compatible'.
+"set compatible
+
+" Vim5 and later versions support syntax highlighting. Uncommenting the next
+" line enables syntax highlighting by default.
+if has("syntax")
+  syntax on
+endif
+
+" If using a dark background within the editing area and syntax highlighting
+" turn on this option as well
+"set background=dark
+
+" Uncomment the following to have Vim jump to the last position when
+" reopening a file
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+endif
+
+" Uncomment the following to have Vim load indentation rules and plugins
+" according to the detected filetype.
+"if has("autocmd")
+"  filetype plugin indent on
+"endif
+
+" The following are commented out as they cause vim to behave a lot
+" differently from regular Vi. They are highly recommended though.
+set showcmd		" Show (partial) command in status line.
+set showmatch		" Show matching brackets.
+"set ignorecase		" Do case insensitive matching
+set smartcase		" Do smart case matching
+set incsearch		" Incremental search
+"set autowrite		" Automatically save before commands like :next and :make
+set hidden		" Hide buffers when they are abandoned
+set mouse=a		" Enable mouse usage (all modes)
+
+" Source a global configuration file if available
+if filereadable("/etc/vim/vimrc.local")
+  source /etc/vim/vimrc.local
+endif
+
+" Basic Config
+syntax on
+syntax enable
+set nocompatible
+set history=3000
+set laststatus=2
+set number
+set hlsearch
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set smartindent
+set expandtab	"tab替换为space
+set foldmethod=syntax
+set nofoldenable
+highlight Search ctermbg=grey ctermfg=black
+set gcr=a:block-blinkon0
+set guioptions-=l
+set guioptions-=L
+set guioptions-=r
+set guioptions-=R
+set guioptions-=m
+set guioptions-=T
+set ruler
+set cursorline                      " highlight current line
+set cmdheight=1
+set switchbuf=useopen
+set showtabline=2                   " Always show tab bar at the top
+set shell=bash
+set t_ti= t_te=                     " Prevent Vim from clobbering the scrollback buffer.
+set scrolloff=3                     " keep more context when scrolling off the end of a buffer
+set nobackup                        " Don't make backups at all
+set nowritebackup
+set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
+set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
+set backspace=indent,eol,start      " allow backspacing over everything in insert mode
+set wildmode=longest,list
+set wildmenu                        " build-in auto completion of vim
+set nojoinspaces                    " Insert only one space when joining lines that contain sentence-terminating punctuation
+set autoread                        " If a file is changed outside of vim, automatically reload it without asking
+set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
+set termencoding=utf-8
+set encoding=utf-8
+
+
+" Plugin settings {{{
+filetype off                        " required
+set rtp+=~/.vim/bundle/Vundle.vim   " set the runtime path to include Vundle and initialize
+call vundle#begin()
+
+Plugin 'VundleVim/Vundle.vim'       " let Vundle manage Vundle, required
+
+" YouCompleteMe is a fast, as-you-type, fuzzy-search code completion engine for Vim. Need make. See :h complete-functions.
+Plugin 'Valloric/YouCompleteMe', {'pinned': 1}
+    highlight Pmenu ctermfg=2 ctermbg=3 guifg=#005f87 guibg=#EEE8D5
+    highlight PmenuSel ctermfg=2 ctermbg=3 guifg=#AFD700 guibg=#106900
+    let g:ycm_complete_in_comments=1    " use YCM in comment
+    let g:ycm_confirm_extra_conf=0
+    let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py'
+    let g:ycm_collect_identifiers_from_tags_files=1
+    " integrate YCM with OmniCppComplete
+    inoremap <leader>; <C-x><C-o>
+    let OmniCpp_DefaultNamespaces = ["_GLIBCXX_STD"]
+    set completeopt-=preview
+    let g:ycm_min_num_of_chars_for_completion=2     " auto complete from the second chars
+    let g:ycm_cache_omnifunc=0                      " disable cache
+    let g:ycm_seed_identifiers_with_syntax=1
+    nnoremap <leader>jc :YcmCompleter GoToDeclaration<CR>
+    nnoremap <leader>jd :YcmCompleter GoToDefinition<CR>
+    let g:ycm_show_diagnostics_ui = 0
+
+" Vim plugin for intensely orgasmic commenting, need filetype plugin on
+Plugin 'scrooloose/nerdcommenter'
+    nmap <Leader>cc :NERDComComment<CR>
+    nmap <Leader>cn :NERDComNestedComment<CR>
+    nmap <Leader>c<space> :NERDComToggleComment<CR>
+    nmap <Leader>ci :NERDComInvertComment<CR>
+    nmap <Leader>c$ :NERDComEOLComment<CR>
+    nmap <Leader>cu :NERDComUncommentLine<CR>
+
+" The NERD tree allows you to explore your filesystem and to open files and directories.
+Plugin 'scrooloose/nerdtree'
+    let NERDTreeWinSize=32
+    let NERDTreeWinPos="right"
+    let NERDTreeShowHidden=1
+    let NERDTreeMinimalUI=1
+    let NERDTreeAutoDeleteBuffer=1
+    nmap <F8> :NERDTreeToggle<cr>
+    " switch between tab of NERDTree, use gt or gT is intra key of nn or np
+    nmap  <Leader>nn :tabn<CR>
+    nmap  <Leader>np :tabp<CR>
+    nmap  <Leader>nw :tabnew<CR>
+    nmap  <Leader>nc :tabclose<CR>
+    " auto open NERDTree when open wim
+    "autocmd vimenter * NERDTree
+    "wincmd w
+    "autocmd VimEnter * wincmd w
+
+" quickly highlight <cword> or visually selected word http://www.vim.org/scripts/script.php?script_id=3692
+Plugin 't9md/vim-quickhl'
+    nmap <F9> <Plug>(quickhl-manual-this-whole-word)
+    xmap <F9> <Plug>(quickhl-manual-this-whole-word)
+    nmap <F10> <Plug>(quickhl-manual-reset)
+    xmap <F10> <Plug>(quickhl-manual-reset)
+
+" Run your favorite search tool from Vim, with an enhanced results list.
+" It need to install ag.
+" Edit ~/.agignore to ignore files.
+Plugin 'mileszs/ack.vim'
+	let g:ackprg = 'ag --nogroup --nocolor --column'
+
+" A few of quick commands to swtich between source files and header files quickly.
+Plugin 'vim-scripts/a.vim'
+    nmap <Leader>ch :A<CR>
+    nmap <Leader>sch :AS<CR>
+
+" Plugin generates symbol dependency tree (aka call tree, call graph) in real-time inside Vim using a Cscope database.
+Plugin 'hari-rangarajan/CCTree'
+    nmap <Leader>zl  :CCTreeLoadDB cscope.out<CR>
+    nmap <Leader>xl  :CCTreeLoadXRefDBFromDisk cctree.out<CR>
+    nmap <Leader>xs  :CCTreeSaveXRefDB cctree.out<CR>
+    nmap <Leader>zs  :CCTreeShowLoadedDBs<CR>
+    nmap <Leader>zf  :CCTreeTraceForward<CR><CR>
+    nmap <Leader>zr  :CCTreeTraceReverse<CR><CR>
+    nmap <Leader>z=  :CCTreeRecurseDepthPlus<CR>
+    nmap <Leader>z-  :CCTreeRecurseDepthMinus<CR>
+    nmap <Leader>zy  :CCTreeWindowSaveCopy<CR>
+    nmap <Leader>zw  :CCTreeWindowToggle<CR>
+
+" a source code browser plugin for Vim
+Plugin 'vim-scripts/taglist.vim'
+    let tagbar_left=1
+    let Tlist_WinWidth=40
+	nnoremap <F7> :Tlist<CR>
+    nmap <Leader>tn :tnext<CR>
+    nmap <Leader>tp :tprevious<CR>
+    autocmd vimenter * Tlist " auto open Tlist when open wim
+    let Tlist_Exit_OnlyWindow=1 " auto close Tlist when close last window
+
+" Repeat.vim remaps . in a way that plugins can tap into it.
+Plugin 'tpope/vim-repeat'
+
+" Surround.vim is all about surroundings: parentheses, brackets, quotes, XML tags, and more. Command: yss, ysiw, cs, ds; Example: yss], ysiw", yss<p>, cs"', ds"
+Plugin 'tpope/vim-surround'
+
+" vimproc is a great asynchronous execution library for Vim. Need Make
+Plugin 'shougo/vimproc.vim', {'pinned': 1}
+
+" The unite or unite.vim plug-in can search and display information from arbitrary sources like files, buffers, recently used files or registers.
+Plugin 'shougo/unite.vim', {'pinned': 1}
+    nmap  <Leader>ub :Unite -start-insert buffer<CR>
+    nmap  <Leader>uf :Unite -start-insert file file_rec<CR>
+    nmap  <Leader>ux :Unite -start-insert buffer file file_rec<CR>
+    nmap  <Leader>ul :Unite -start-insert -no-tab line<CR>
+    nmap  <Leader>uc :UniteClose<CR>
+
+" Lean & mean status/tabline for vim that's light as air. Replace vim-powerline above. Vim-airline integrates with a variety of plugins out of the box,
+" including ctrlp,unite,tagbar,csv,syntastic,hunks,virtualenv,tmuxline,promptline,ctrlspace. So we turn them off. See :help airline
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+    set t_Co=256
+    "set ambiwidth=double
+    "set invlist
+    let g:airline_powerline_fonts = 0
+    "let g:airline_theme='dark'
+    let g:airline_skip_empty_sections = 1
+    "let g:airline_section_error = '%l'
+    "let g:airline_section_warning = '%c'
+    let g:airline#extensions#default#layout = [ [ 'a', 'b', 'c' ], [ 'x', 'y', 'z'] ]
+    let g:airline_extensions = ['branch', 'tabline']
+    let g:airline#extensions#syntastic#enabled = 0
+    let g:airline#extensions#whitespace#enabled = 0
+    let g:airline#extensions#whitespace#symbol = '!'
+    let g:airline#extensions#tabline#enabled = 1
+    let g:airline#extensions#tabline#buffer_nr_show = 1
+
+" Molokai is a Vim port of the monokai theme for TextMate originally created by Wimer Hazenberg. Molokai -- 多彩, solarized -- 素朴, phd -- 古典
+Plugin 'tomasr/molokai'
+Plugin 'altercation/vim-colors-solarized'
+Plugin 'vim-scripts/phd'
+
+" fugitive.vim may very well be the best Git wrapper of all time.
+Plugin 'tpope/vim-fugitive'
+
+" vim-signature is a plugin to place, toggle and display marks.
+Plugin 'kshenoy/vim-signature'
+
+" multiple selection feature like Sublime Text's
+Plugin 'terryma/vim-multiple-cursors'
+    let g:multi_cursor_use_default_mapping=0
+    let g:multi_cursor_next_key='<C-n>'
+    let g:multi_cursor_prev_key='<C-p>'
+    let g:multi_cursor_skip_key='<C-x>'
+    let g:multi_cursor_quit_key='<Esc>'
+
+" EasyMotion provides a much simpler way to use some motions in vim.
+Plugin 'easymotion/vim-easymotion'
+
+" it's useful to line up text.
+Plugin 'godlygeek/tabular'
+    nnoremap <F11> :bp<CR>
+    nnoremap <F12> :bn<CR>
+    map <leader>1 :b 1<CR>
+    map <leader>2 :b 2<CR>
+    map <leader>3 :b 3<CR>
+    map <leader>4 :b 4<CR>
+    map <leader>5 :b 5<CR>
+    map <leader>6 :b 6<CR>
+    map <leader>7 :b 7<CR>
+    map <leader>8 :b 8<CR>
+    map <leader>9 :b 9<CR>
+
+" Gundo.vim is Vim plugin to visualize your Vim undo tree.
+Plugin 'sjl/gundo.vim'
+    nnoremap <leader>gu :GundoToggle<CR>
+
+" Run commands quickly.
+Plugin 'thinca/vim-quickrun'
+
+" This plugin causes all trailing whitespace to be highlighted in red.
+Plugin 'bronson/vim-trailing-whitespace'
+    map <leader><space> :FixWhitespace<CR>
+
+Plugin 'plasticboy/vim-markdown'
+    let g:vim_markdown_frontmatter=1
+
+Plugin 'vim-utils/vim-man'
+	nmap <Leader>man :Man 3 <C-R>=expand("<cword>")<CR><CR>
+
+Plugin 'fatih/vim-go'
+    let g:go_version_warning = 0
+
+Plugin 'chr4/nginx.vim'
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+"filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+filetype plugin on
+"
+" Brief help
+" :PluginList       - lists configured plugins
+" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+"
+" see :h vundle for more details or wiki for FAQ
+" Put your non-Plugin stuff after this line
+
+
+" Misc settings
+colorscheme molokai
+hi Visual term=reverse cterm=reverse guibg=Grey
+
+" 80 column line
+if exists('+colorcolumn')
+  set colorcolumn=80
+else
+  au BufWinEnter * let w:m2=matchadd('ErrorMsg', '\%>80v.\+', -1)
+endif
+
+set tags+=tags
+set tags+=../tags
+set tags+=../../tags
+
+" cscope
+if has("cscope")
+    set csprg=/usr/bin/cscope
+    set csto=0
+    set cst
+    set nocsverb
+    " add any database in current directory
+    if filereadable("cscope.out")
+        cs add cscope.out
+    endif
+    set csverb
+    set cscopetag
+    set cscopequickfix=s-,c-,d-,t-,e-,i-,f-
+endif
+nmap <C-f>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+nmap <C-f>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+nmap <C-f>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+nmap <C-f>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+nmap <C-f>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+nmap <C-f>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+nmap <C-f>f :cs find f <C-R>=expand("<cword>")<CR><CR>
+nmap <C-f>i :cs find i ^<C-R>=expand("<cword>")<CR>$<CR>
+
+
+nmap <F2> :split<CR>
+nmap <F3> :copen<CR>
+nmap <F4> :q<CR>
+nmap <F5> :cprevious<CR>
+nmap <F6> :cnext<CR>
